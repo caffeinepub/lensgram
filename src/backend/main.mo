@@ -6,7 +6,9 @@ import Principal "mo:core/Principal";
 import Runtime "mo:core/Runtime";
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
+import Migration "migration";
 
+(with migration = Migration.run)
 actor {
   type Username = Text;
   type UserProfile = {
@@ -82,10 +84,6 @@ actor {
   };
 
   public shared ({ caller }) func onboard(displayName : Text, email : Text, username : Text) : async UserProfile {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can onboard");
-    };
-
     if (userProfiles.containsKey(caller)) {
       Runtime.trap("User already onboarded");
     };
@@ -121,9 +119,7 @@ actor {
     };
 
     switch (userProfiles.get(caller)) {
-      case (null) {
-        Runtime.trap("User not onboarded");
-      };
+      case (null) { Runtime.trap("User not onboarded") };
       case (?existingProfile) {
         let normalizedUsername = normalizeUsername(profile.username);
         if (normalizedUsername != existingProfile.username) {
@@ -346,9 +342,7 @@ actor {
     };
 
     switch (callStates.get(caller)) {
-      case (null) {
-        Runtime.trap("No incoming call");
-      };
+      case (null) { Runtime.trap("No incoming call") };
       case (?state) {
         if (state.caller != callInitiator or state.callee != caller) {
           Runtime.trap("Invalid call state");
@@ -363,9 +357,7 @@ actor {
     };
 
     switch (callStates.get(caller)) {
-      case (null) {
-        Runtime.trap("No incoming call");
-      };
+      case (null) { Runtime.trap("No incoming call") };
       case (?state) {
         if (state.caller != callInitiator or state.callee != caller) {
           Runtime.trap("Invalid call state");
@@ -382,9 +374,7 @@ actor {
     };
 
     switch (callStates.get(caller)) {
-      case (null) {
-        Runtime.trap("Not in a call");
-      };
+      case (null) { Runtime.trap("Not in a call") };
       case (?state) {
         if ((state.caller != caller and state.callee != caller) or
             (state.caller != partner and state.callee != partner)) {

@@ -6,6 +6,9 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Alert, AlertDescription } from '../components/ui/alert';
+import { classifyOnboardingError } from '../utils/onboardingErrors';
+import { useInternetIdentity } from '../hooks/useInternetIdentity';
+import { useQueryClient } from '@tanstack/react-query';
 
 export default function OnboardingPage() {
   const [displayName, setDisplayName] = useState('');
@@ -13,6 +16,8 @@ export default function OnboardingPage() {
   const [username, setUsername] = useState('');
   const navigate = useNavigate();
   const onboardMutation = useOnboard();
+  const { clear } = useInternetIdentity();
+  const queryClient = useQueryClient();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,8 +29,14 @@ export default function OnboardingPage() {
     }
   };
 
-  const errorMessage = onboardMutation.error?.message || '';
-  const isUsernameTaken = errorMessage.includes('Username taken');
+  const handleReLogin = async () => {
+    await clear();
+    queryClient.clear();
+  };
+
+  const errorClassification = onboardMutation.error
+    ? classifyOnboardingError(onboardMutation.error)
+    : null;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-muted/20 to-background p-4">
@@ -82,12 +93,19 @@ export default function OnboardingPage() {
               </p>
             </div>
 
-            {onboardMutation.isError && (
+            {onboardMutation.isError && errorClassification && (
               <Alert variant="destructive">
                 <AlertDescription>
-                  {isUsernameTaken
-                    ? 'This username is already taken. Please choose another one.'
-                    : 'Failed to create profile. Please try again.'}
+                  {errorClassification.message}
+                  {errorClassification.type === 'unauthorized' && (
+                    <Button
+                      variant="link"
+                      className="p-0 h-auto ml-2 text-destructive-foreground underline"
+                      onClick={handleReLogin}
+                    >
+                      Sign in again
+                    </Button>
+                  )}
                 </AlertDescription>
               </Alert>
             )}

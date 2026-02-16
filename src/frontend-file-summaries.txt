@@ -1,7 +1,7 @@
 {
   "frontend/src/App.tsx": "Main application component with TanStack Router setup, authentication gating, onboarding flow, and all page routes (Discover, Requests, Chats, Chat Detail).",
   "frontend/src/hooks/useQueries.ts": "Minimal hook file for actor readiness check; feature-specific hooks are in separate files.",
-  "frontend/src/hooks/useCurrentUserProfile.ts": "React Query hooks for fetching the current user's profile and onboarding with proper loading state management to prevent UI flash.",
+  "frontend/src/hooks/useCurrentUserProfile.ts": "React Query hooks for fetching current user profile (handling unauthorized errors gracefully by returning null) and onboarding with proper error propagation for classification.",
   "frontend/src/hooks/useUserSearch.ts": "React Query hook for searching users by exact username.",
   "frontend/src/hooks/useConnections.ts": "React Query hooks for fetching connections, connection profiles, and individual user profiles without the useGetConnections hook (moved to useConnectionRequests to avoid circular imports).",
   "frontend/src/hooks/useConnectionRequests.ts": "React Query hooks and mutations for managing connection requests (fetch pending, send, accept, reject) with polling, status helpers, and the useGetConnections hook moved here to resolve circular dependency.",
@@ -10,7 +10,7 @@
   "frontend/src/utils/time.ts": "Utility functions for formatting timestamps into human-readable relative time and message time strings.",
   "frontend/src/components/auth/LoginButton.tsx": "Login/Logout button component using Internet Identity with query cache clearing on logout.",
   "frontend/src/components/auth/SignedOutScreen.tsx": "Landing screen shown to unauthenticated users with LensGram branding and login prompt.",
-  "frontend/src/pages/OnboardingPage.tsx": "First-time user onboarding form collecting display name, email, and unique username with validation and error handling.",
+  "frontend/src/pages/OnboardingPage.tsx": "Onboarding form with enhanced error handling that displays specific messages for username-taken, session-expired (with re-login button), and generic profile creation errors.",
   "frontend/src/pages/DiscoverPage.tsx": "User discovery page with username search form and result display with connection actions.",
   "frontend/src/pages/RequestsPage.tsx": "Connection requests management page showing incoming requests with accept/reject actions.",
   "frontend/src/pages/ChatsPage.tsx": "Chat list page displaying all connected users with navigation to individual chat threads.",
@@ -21,5 +21,7 @@
   "frontend/src/components/layout/PrimaryNav.tsx": "Primary navigation component with active route highlighting for Discover, Requests, and Chats pages.",
   "frontend/src/index.css": "Global styles with warm neutral OKLCH color system (sand/stone palette with amber accents) for both light and dark modes.",
   "frontend/index.html": "HTML entry point with LensGram title and favicon reference to generated icon asset.",
-  "frontend/tailwind.config.js": "Tailwind configuration with extended color tokens matching the warm neutral design system."
+  "frontend/tailwind.config.js": "Tailwind configuration with extended color tokens matching the warm neutral design system.",
+  "frontend/src/hooks/useActor.ts": "Actor initialization hook that only attempts privileged access-control initialization when a valid secret token is present, wrapping it in try/catch to prevent failures from blocking normal user operations.",
+  "frontend/src/utils/onboardingErrors.ts": "Helper utility that classifies onboarding errors into unauthorized/session-expired, username-taken, or generic profile-creation failures with user-friendly messages."
 }

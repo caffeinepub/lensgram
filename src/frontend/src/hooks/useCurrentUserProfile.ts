@@ -9,7 +9,16 @@ export function useGetCallerUserProfile() {
     queryKey: ['currentUserProfile'],
     queryFn: async () => {
       if (!actor) throw new Error('Actor not available');
-      return actor.getCallerUserProfile();
+      try {
+        return await actor.getCallerUserProfile();
+      } catch (error) {
+        // If unauthorized, return null (user needs to onboard first)
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        if (errorMessage.toLowerCase().includes('unauthorized')) {
+          return null;
+        }
+        throw error;
+      }
     },
     enabled: !!actor && !actorFetching,
     retry: false,
@@ -29,7 +38,12 @@ export function useOnboard() {
   return useMutation({
     mutationFn: async ({ displayName, email, username }: { displayName: string; email: string; username: string }) => {
       if (!actor) throw new Error('Actor not available');
-      return actor.onboard(displayName, email, username);
+      try {
+        return await actor.onboard(displayName, email, username);
+      } catch (error) {
+        // Preserve the original error for proper classification
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['currentUserProfile'] });

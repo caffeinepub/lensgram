@@ -1,84 +1,36 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-16T17:58:58.050Z",
-  "summary": "Most core pages/hooks were added (auth gate, onboarding gate, discover/requests/chats routing, connection requests, polling-based chat/call hooks, and theme variables). However, several key acceptance details appear unimplemented or inconsistent: username case-insensitive uniqueness is not enforced, call signaling lacks the required persisted multi-state lifecycle, and there are strong indicators of incorrect identity modeling in the frontend (treating `username` as a `Principal`). There are also additions not requested (admin-token access-control initialization and a caffeine.ai promotional footer link) and a likely violation of the “single Motoko actor file” constraint via added authorization modules.",
+  "generatedAt": "2026-02-16T18:08:18.518Z",
+  "summary": "Most changes align with improving onboarding reliability and error handling (frontend error classification and more graceful handling of unauthorized profile fetches). However, the diff introduces a backend migration module that was not requested, and the provided backend snippet does not show any change that explicitly grants/recognizes a #user permission for newly authenticated principals (though onboarding itself appears not to require permissions).",
   "missing_requirements": [
     {
-      "id": "REQ-2",
-      "requirement": "Username must be unique (case-insensitive) across all users.",
-      "reason": "Backend normalization is a no-op, so case-insensitive uniqueness is not enforced.",
+      "id": "REQ-11",
+      "requirement": "If the backend currently requires a permission (e.g., #user) for onboarding, the backend must reliably grant/recognize that permission for authenticated end-users prior to onboarding (without exposing admin privileges).",
+      "reason": "In the shown backend changes, `onboard` has no access-control checks and there is no visible logic that grants/recognizes `#user` for authenticated principals. Other profile APIs still trap unless `#user` is present, so the diff does not demonstrate any backend-side mechanism ensuring end-users have/receive the needed permission.",
       "evidence": [
-        "backend/main.mo (normalizeUsername returns input unchanged: `username // No conversion yet available in core`)"
-      ]
-    },
-    {
-      "id": "REQ-6",
-      "requirement": "Persist call request status transitions (e.g., requested, accepted, declined, ended, missed) and show state updates in the UI.",
-      "reason": "Backend call state type shown only tracks `caller`, `callee`, and `isActive` with no status enum/history; UI text implies states, but there is no evidence of persisted multi-state transitions in the backend snippet.",
-      "evidence": [
-        "backend/main.mo (type CallState = { caller; callee; isActive })",
-        "frontend/src/components/calls/CallRequestPanel.tsx"
+        "backend/main.mo (shown: onboard has no permission logic; getCallerUserProfile/saveCallerUserProfile still require #user and trap unauthorized)"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Admin-token-based access control initialization via a secret URL parameter (`caffeineAdminToken`) and `_initializeAccessControlWithSecret`.",
-      "reason": "BuildRequest does not mention admin tokens, secret URL parameters, or an access-control initialization backdoor; only Internet Identity auth was requested.",
+      "description": "Added a backend migration module and wired migration into the main actor.",
+      "reason": "The BuildRequest focuses on fixing login/onboarding reliability and error handling; it does not request adding migration infrastructure.",
       "evidence": [
-        "frontend/src/hooks/useActor.ts (getSecretParameter('caffeineAdminToken'), actor._initializeAccessControlWithSecret(adminToken))",
-        "backend/main.mo (includes authorization mixins: `include MixinAuthorization(accessControlState)`)"
-      ]
-    },
-    {
-      "description": "Promotional footer link to caffeine.ai with UTM parameters.",
-      "reason": "Not requested in any requirement; adds external promotional content.",
-      "evidence": [
-        "frontend/src/components/layout/AppLayout.tsx (footer link to https://caffeine.ai/...utm_source=Caffeine-footer...)"
-      ]
-    },
-    {
-      "description": "Backend split into additional authorization modules beyond `backend/main.mo`.",
-      "reason": "Constraint requires backend remain a single Motoko actor with all logic in `backend/main.mo`, but `backend/main.mo` imports `authorization/MixinAuthorization` and `authorization/access-control`, implying additional backend files.",
-      "evidence": [
-        "backend/main.mo (imports `authorization/MixinAuthorization`, `authorization/access-control`)"
+        "backend/migration.mo",
+        "backend/main.mo (with migration = Migration.run; import Migration \"migration\")"
       ]
     }
   ],
-  "confidence": 0.7,
+  "confidence": 0.62,
   "changed_files": [
-    "all_files_summary.json",
     "backend/main.mo",
+    "backend/migration.mo",
     "frontend-file-summaries.txt",
-    "frontend/index.css",
-    "frontend/index.html",
-    "frontend/src/App.tsx",
-    "frontend/src/components/auth/LoginButton.tsx",
-    "frontend/src/components/auth/SignedOutScreen.tsx",
-    "frontend/src/components/calls/CallRequestPanel.tsx",
-    "frontend/src/components/layout/AppLayout.tsx",
-    "frontend/src/components/layout/PrimaryNav.tsx",
-    "frontend/src/components/users/UserResultCard.tsx",
-    "frontend/src/hooks/useActor.ts",
-    "frontend/src/hooks/useCallRequests.ts",
-    "frontend/src/hooks/useChat.ts",
-    "frontend/src/hooks/useConnectionRequests.ts",
-    "frontend/src/hooks/useConnections.ts",
     "frontend/src/hooks/useCurrentUserProfile.ts",
-    "frontend/src/hooks/useInternetIdentity.ts",
-    "frontend/src/hooks/useQueries.ts",
-    "frontend/src/hooks/useUserSearch.ts",
-    "frontend/src/index.css",
-    "frontend/src/main.tsx",
-    "frontend/src/pages/ChatDetailPage.tsx",
-    "frontend/src/pages/ChatsPage.tsx",
-    "frontend/src/pages/DiscoverPage.tsx",
     "frontend/src/pages/OnboardingPage.tsx",
-    "frontend/src/pages/RequestsPage.tsx",
-    "frontend/src/utils/time.ts",
-    "frontend/src/utils/urlParams.ts",
-    "frontend/tailwind.config.js",
+    "frontend/src/utils/onboardingErrors.ts",
     "project_state.json"
   ]
 }
