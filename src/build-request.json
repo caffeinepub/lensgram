@@ -1,0 +1,208 @@
+{
+  "kind": "build_request",
+  "title": "LensGram: Username-based discovery with follow-gated chat and call requests",
+  "projectName": "LensGram",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Add authentication via Internet Identity and require a signed-in Principal for all app features.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "on the starting it should ask us our name and email and username"
+        ]
+      },
+      "acceptanceCriteria": [
+        "When not authenticated, the user is prompted to sign in with Internet Identity before using the app.",
+        "After sign-in, the backend associates all stored data with the caller Principal and rejects anonymous access."
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Implement first-time onboarding to collect and persist a user profile with display name, email, and unique username (case-insensitive uniqueness).",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "on the starting it should ask us our name and email and username"
+        ]
+      },
+      "acceptanceCriteria": [
+        "After first sign-in, the user is taken to an onboarding screen that requires Name, Email, and Username.",
+        "Username must be unique (case-insensitive) across all users; attempting to claim an existing username returns a clear error in English.",
+        "On successful onboarding, the profile is persisted and can be fetched on subsequent visits without re-entering details."
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Add user discovery: enable searching for other users by exact username and show a user result card with username and display name.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "and through username we can find any user"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A search input allows entering a username and submitting to query the backend.",
+        "If a username exists, the UI shows the matched user; if not, it shows a ‘User not found’ state in English.",
+        "Search does not expose email addresses to other users."
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Implement a connection (follow) request system: users can send a follow request to another user; the recipient can accept or reject; only mutually connected (accepted) pairs can chat or initiate call requests.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "one person should send request first to another to add him if the another person accept the follow request then only he can message and make a call"
+        ]
+      },
+      "acceptanceCriteria": [
+        "From a discovered user profile card/page, a user can send a follow request; duplicate pending requests are prevented.",
+        "Recipients can view a list of incoming requests and accept or reject each request.",
+        "Backend enforces that messaging and call-request creation is allowed only if a request has been accepted for that pair.",
+        "UI clearly indicates connection status (not connected / request sent / incoming request / connected)."
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "text": "Implement 1:1 messaging between connected users, including creating a conversation thread per connected pair and sending/reading messages with timestamps.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "create a website which is a messenger and help to chat"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A connected user can open a 1:1 chat with another connected user and send messages.",
+        "Messages persist in the backend and reload correctly on refresh.",
+        "A user cannot read or send messages in a thread unless they are one of the two participants and the connection is accepted.",
+        "The chat UI shows message author (self/other) and a human-readable timestamp."
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "text": "Add a ‘call’ feature as call requests (signaling only): allow connected users to initiate a call request and allow the recipient to accept/decline/end; show call state updates in the UI.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "help for making call",
+          "then only he can message and make a call"
+        ]
+      },
+      "acceptanceCriteria": [
+        "From a connected user’s chat, a user can initiate a call request.",
+        "The recipient sees an incoming call request screen/state with Accept/Decline actions.",
+        "Both users can end an active call request; call status transitions are persisted (e.g., requested, accepted, declined, ended, missed).",
+        "Backend prevents non-connected users from creating call requests to each other."
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "text": "Create the main navigation and pages for LensGram: Onboarding (first-time), Search/Discover, Requests (incoming/outgoing), Chats list, Chat detail (with call controls).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "we can find person using username",
+          "send request first to another",
+          "only he can message and make a call"
+        ]
+      },
+      "acceptanceCriteria": [
+        "User can navigate between Discover, Requests, and Chats.",
+        "If the user has no profile yet, they are routed to Onboarding until completion.",
+        "Chats list shows connected users with whom a conversation exists (or allows starting a chat from a connected user)."
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "text": "Define and enforce a coherent visual theme for LensGram (distinct style, consistent colors/typography/layout) across all pages using Tailwind and existing UI components; avoid blue/purple as primary brand colors.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "the website name should be 'LensGram'"
+        ]
+      },
+      "acceptanceCriteria": [
+        "All pages share consistent spacing, typography scale, and component styling.",
+        "Primary brand color is not blue or purple.",
+        "Theme is applied consistently to navigation, forms, lists, chat bubbles, and empty states."
+      ]
+    },
+    {
+      "id": "REQ-9",
+      "text": "Add generated static brand assets and use them in the UI: an app logo and a small favicon-style icon.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "the website name should be 'LensGram'"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The generated images are placed in frontend/public/assets/generated and referenced directly from the frontend.",
+        "The app header/nav displays the logo.",
+        "The app uses the icon as a visible mark in the UI (e.g., login/onboarding header)."
+      ]
+    }
+  ],
+  "constraints": [
+    "Backend must remain a single Motoko actor (all logic in backend/main.mo).",
+    "Do not edit files under frontend/src/components/ui (compose them instead).",
+    "Do not edit frontend immutable hook files (frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx).",
+    "No third-party authentication providers other than Internet Identity.",
+    "No WebSockets/real-time chat infrastructure; implement using request/response polling or React Query refetch patterns.",
+    "Do not store or reveal users' email addresses to other users via search or profile views."
+  ],
+  "nonGoals": [
+    "Implementing true real-time voice/video calling (WebRTC media streaming) is out of scope; only call request/signaling states are required.",
+    "Group chats are out of scope (1:1 only).",
+    "Read receipts/typing indicators/presence are out of scope.",
+    "File/image message attachments are out of scope."
+  ],
+  "imageRequirements": {
+    "required": [
+      "LensGram wordmark logo with modern sans-serif lettering and subtle lens/camera motif, warm neutral palette (lensgram-logo.dim_1200x400.png)",
+      "Minimal lens/camera icon mark for favicon/app badge, flat design, warm neutral palette (lensgram-icon.dim_256x256.png)"
+    ],
+    "edits": []
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [],
+    "goalsToRemove": [],
+    "preferencesToAdd": [
+      "Use English for all user-facing text."
+    ],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
+  }
+}

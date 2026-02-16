@@ -1,0 +1,285 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "LensGram Frontend: Auth-gated discovery, follow requests, chat, and call request UI",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "summary": "Require Internet Identity sign-in before any app features and present a login-gated shell.",
+      "acceptanceCriteria": [
+        "When not authenticated, the user is prompted to sign in with Internet Identity before using the app."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "create",
+          "description": "Create the top-level app component that reads authentication state via the existing hooks, blocks all feature routes when unauthenticated, and renders a dedicated signed-out screen with a login action. Use the selected \"authorization\" component guidance for auth-gating behavior and cache clearing; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/auth/LoginButton.tsx",
+          "operation": "create",
+          "description": "Add a Login/Logout button component using the existing Internet Identity hook; on logout, clear React Query cached data to avoid showing stale private data. Use the selected \"authorization\" component guidance for the LoginButton pattern; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/auth/SignedOutScreen.tsx",
+          "operation": "create",
+          "description": "Create a signed-out screen shown when the user is not authenticated, with clear English messaging that sign-in is required. Compose existing shadcn/ui components (do not edit them); verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Implement first-time onboarding UI to collect display name, email, and unique username, and persist/fetch the profile.",
+      "acceptanceCriteria": [
+        "After first sign-in, the user is taken to an onboarding screen that requires Name, Email, and Username.",
+        "Username must be unique (case-insensitive) across all users; attempting to claim an existing username returns a clear error in English.",
+        "On successful onboarding, the profile is persisted and can be fetched on subsequent visits without re-entering details."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useCurrentUserProfile.ts",
+          "operation": "create",
+          "description": "Create React Query hooks for fetching the current user's profile and for onboarding/profile persistence using the backend actor, including loading states that avoid onboarding UI 'flash' while the actor/profile fetch is resolving. Use the selected \"authorization\" component guidance for profile setup flow; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/OnboardingPage.tsx",
+          "operation": "create",
+          "description": "Create the onboarding page with required fields (Display Name, Email, Username), validation, and clear English error rendering for username conflicts coming from the backend. Ensure the UI only proceeds once onboarding succeeds. Compose existing shadcn/ui components (do not edit them); verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Wire onboarding routing so that authenticated users without a profile are redirected to Onboarding and cannot access other pages until completion. Use the selected \"authorization\" component guidance for gating behavior; verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Add username discovery search with a safe user result card (username + display name only).",
+      "acceptanceCriteria": [
+        "A search input allows entering a username and submitting to query the backend.",
+        "If a username exists, the UI shows the matched user; if not, it shows a ‘User not found’ state in English.",
+        "Search does not expose email addresses to other users."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/DiscoverPage.tsx",
+          "operation": "create",
+          "description": "Create the Discover page with an exact-username search form that queries the backend and renders either a user match or a 'User not found' empty state in English. Ensure only username + display name are shown (never email). Compose existing shadcn/ui components (do not edit them); verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/users/UserResultCard.tsx",
+          "operation": "create",
+          "description": "Create a reusable user result card that displays display name and username only, and provides an area for connection-request actions (added in REQ-4). Compose existing shadcn/ui components (do not edit them); verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/useUserSearch.ts",
+          "operation": "create",
+          "description": "Create a React Query hook for exact-username lookup that returns typed states (found/not found/error) and supports clear English error/empty handling in the UI. Verify any selected component usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Register the Discover route in the app router and make it reachable from navigation. Verify any selected component usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Implement follow/connection request UI: send requests, review incoming requests, accept/reject, and show connection status.",
+      "acceptanceCriteria": [
+        "From a discovered user profile card/page, a user can send a follow request; duplicate pending requests are prevented.",
+        "Recipients can view a list of incoming requests and accept or reject each request.",
+        "UI clearly indicates connection status (not connected / request sent / incoming request / connected)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/RequestsPage.tsx",
+          "operation": "create",
+          "description": "Create the Requests page showing incoming requests with Accept/Reject actions and outgoing/pending status for requests the user has sent, with clear English empty states. Compose existing shadcn/ui components (do not edit them); verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/useConnectionRequests.ts",
+          "operation": "create",
+          "description": "Create React Query hooks and mutations to load pending requests, send a request, accept, and reject. Add refetch intervals or invalidations so request state updates without WebSockets (polling allowed). Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/useConnections.ts",
+          "operation": "create",
+          "description": "Create a React Query hook for the connected principals list and helpers to determine connection status for a viewed user, supporting 'not connected / request sent / incoming / connected' UI rendering. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/users/UserResultCard.tsx",
+          "operation": "modify",
+          "description": "Add connection status indicators and context-appropriate actions (Send request / Pending / Incoming prompt to go to Requests / Connected). Ensure duplicate pending sends are disabled client-side and errors are shown in English. Compose existing shadcn/ui components (do not edit them); verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Register the Requests route in the router and make it reachable from navigation. Verify any selected component usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "summary": "Implement 1:1 chat UI between connected users with message history, timestamps, and polling-based refresh.",
+      "acceptanceCriteria": [
+        "A connected user can open a 1:1 chat with another connected user and send messages.",
+        "Messages persist in the backend and reload correctly on refresh.",
+        "A user cannot read or send messages in a thread unless they are one of the two participants and the connection is accepted.",
+        "The chat UI shows message author (self/other) and a human-readable timestamp."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/ChatsPage.tsx",
+          "operation": "create",
+          "description": "Create a Chats list page that shows connected users (or existing threads) and allows navigating into a 1:1 chat. Provide clear English empty states when there are no connections/chats. Compose existing shadcn/ui components (do not edit them); verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/ChatDetailPage.tsx",
+          "operation": "create",
+          "description": "Create the chat detail page that displays message history with self/other styling and human-readable timestamps, and includes a composer to send messages. Implement polling/refetch patterns (no WebSockets) to keep the thread updated. Compose existing shadcn/ui components (do not edit them); verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/useChat.ts",
+          "operation": "create",
+          "description": "Create React Query hooks for fetching messages for a selected partner and sending a new message; include periodic refetch for new messages and invalidations on send. Handle authorization/connection errors gracefully with English messaging. Verify any selected component usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/utils/time.ts",
+          "operation": "create",
+          "description": "Add a small utility for formatting backend timestamps into human-readable English times used by chat and call request UI. Verify any selected component usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Register the Chats list route and Chat detail route (including parameterized routing) and ensure navigation can reach them. Verify any selected component usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "summary": "Add call request (signaling-only) controls and UI state transitions within chat using polling updates.",
+      "acceptanceCriteria": [
+        "From a connected user’s chat, a user can initiate a call request.",
+        "The recipient sees an incoming call request screen/state with Accept/Decline actions.",
+        "Both users can end an active call request; call status transitions are persisted (e.g., requested, accepted, declined, ended, missed)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useCallRequests.ts",
+          "operation": "create",
+          "description": "Create React Query hooks/mutations for initiating, accepting, declining, ending, and polling the current call state. Implement refetchInterval-based updates (no WebSockets) and show clear English error messages for unauthorized/non-connected actions. Verify any selected component usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/calls/CallRequestPanel.tsx",
+          "operation": "create",
+          "description": "Create a call request UI panel used in chat detail that shows current call state and provides Initiate / Accept / Decline / End actions as appropriate. Compose existing shadcn/ui components (do not edit them); verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/ChatDetailPage.tsx",
+          "operation": "modify",
+          "description": "Wire the call request panel into the chat detail UI and ensure the panel reflects live call state via polling. Compose existing shadcn/ui components (do not edit them); verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "summary": "Create LensGram navigation and required pages: Onboarding, Discover, Requests, Chats list, and Chat detail with call controls.",
+      "acceptanceCriteria": [
+        "User can navigate between Discover, Requests, and Chats.",
+        "If the user has no profile yet, they are routed to Onboarding until completion.",
+        "Chats list shows connected users with whom a conversation exists (or allows starting a chat from a connected user)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/layout/AppLayout.tsx",
+          "operation": "create",
+          "description": "Create a shared authenticated layout that includes a consistent header (brand + auth actions) and a navigation area linking to Discover, Requests, and Chats. Compose existing shadcn/ui components (do not edit them); verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/layout/PrimaryNav.tsx",
+          "operation": "create",
+          "description": "Implement the main navigation component used by AppLayout to switch between required pages, reflecting active route state. Compose existing shadcn/ui components (do not edit them); verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Wire AppLayout into the router so all authenticated+onboarded routes render within it, and ensure all required pages are registered and reachable (Onboarding, Discover, Requests, Chats list, Chat detail). Verify any selected component usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "summary": "Apply a coherent LensGram visual theme with Tailwind across all pages (no blue/purple as primary).",
+      "acceptanceCriteria": [
+        "All pages share consistent spacing, typography scale, and component styling.",
+        "Primary brand color is not blue or purple.",
+        "Theme is applied consistently to navigation, forms, lists, chat bubbles, and empty states."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/index.css",
+          "operation": "create",
+          "description": "Create global Tailwind base styles and CSS variables for a warm neutral LensGram theme (e.g., sand/stone + amber accents) ensuring the primary brand color is not blue/purple. Apply consistent typography and background/surface tokens used throughout the app. Verify any selected component usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/layout/AppLayout.tsx",
+          "operation": "modify",
+          "description": "Apply consistent layout spacing, surfaces, and typography classes so navigation and page containers match the LensGram theme. Compose existing shadcn/ui components (do not edit them); verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/DiscoverPage.tsx",
+          "operation": "modify",
+          "description": "Ensure Discover page form, result card presentation, and empty states follow the global LensGram theme tokens and spacing. Compose existing shadcn/ui components (do not edit them); verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/ChatDetailPage.tsx",
+          "operation": "modify",
+          "description": "Ensure chat bubbles, timestamps, composer, and call panel follow the global LensGram theme (consistent surfaces, borders, and typography). Compose existing shadcn/ui components (do not edit them); verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-9",
+      "summary": "Add generated logo + icon assets and display them in the UI (header and login/onboarding).",
+      "acceptanceCriteria": [
+        "The generated images are placed in frontend/public/assets/generated and referenced directly from the frontend.",
+        "The app header/nav displays the logo.",
+        "The app uses the icon as a visible mark in the UI (e.g., login/onboarding header)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/public/assets/generated/lensgram-logo.dim_1200x400.png",
+          "operation": "create",
+          "description": "Add the generated LensGram wordmark logo asset at the exact required path so it can be referenced as a static public asset."
+        },
+        {
+          "path": "frontend/public/assets/generated/lensgram-icon.dim_256x256.png",
+          "operation": "create",
+          "description": "Add the generated LensGram icon mark asset at the exact required path so it can be referenced as a static public asset."
+        },
+        {
+          "path": "frontend/index.html",
+          "operation": "modify",
+          "description": "Reference the generated icon as the favicon so the browser tab uses the LensGram mark. Ensure the reference points to frontend/public/assets/generated/lensgram-icon.dim_256x256.png."
+        },
+        {
+          "path": "frontend/src/components/layout/AppLayout.tsx",
+          "operation": "modify",
+          "description": "Display the LensGram wordmark logo in the authenticated app header/nav using the static asset at frontend/public/assets/generated/lensgram-logo.dim_1200x400.png. Compose existing shadcn/ui components (do not edit them); verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/auth/SignedOutScreen.tsx",
+          "operation": "modify",
+          "description": "Show the LensGram icon as a visible mark on the signed-out/login screen using the static asset at frontend/public/assets/generated/lensgram-icon.dim_256x256.png. Compose existing shadcn/ui components (do not edit them); verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/OnboardingPage.tsx",
+          "operation": "modify",
+          "description": "Show the LensGram icon (or small logo treatment) on the onboarding header using frontend/public/assets/generated/lensgram-icon.dim_256x256.png to reinforce branding. Compose existing shadcn/ui components (do not edit them); verify the component's usage instructions before implementing."
+        }
+      ]
+    }
+  ]
+}

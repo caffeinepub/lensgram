@@ -1,0 +1,201 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-add-authentication-via-internet-identity-and-require-a-signed-in-principal-for-all-app-features",
+      "featureTitle": "Add authentication via Internet Identity and require a signed-in Principal for all app features.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/auth/LoginButton.tsx",
+        "frontend/src/components/auth/SignedOutScreen.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-first-time-onboarding-to-collect-and-persist-a-user-profile-with-display-name-email-and-unique-username-case-insensitive-uniqueness",
+      "featureTitle": "Implement first-time onboarding to collect and persist a user profile with display name, email, and unique username (case-insensitive uniqueness).",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/hooks/useCurrentUserProfile.ts",
+        "frontend/src/pages/OnboardingPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-user-discovery-enable-searching-for-other-users-by-exact-username-and-show-a-user-result-card-with-username-and-display-name",
+      "featureTitle": "Add user discovery: enable searching for other users by exact username and show a user result card with username and display name.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/users/UserResultCard.tsx",
+        "frontend/src/hooks/useUserSearch.ts",
+        "frontend/src/pages/DiscoverPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-3"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-a-connection-follow-request-system-users-can-send-a-follow-request-to-another-user-the-recipient-can-accept-or-reject-only-mutually-connected-accepted-pairs-can-chat-or-initiate-call-requests",
+      "featureTitle": "Implement a connection (follow) request system: users can send a follow request to another user; the recipient can accept or reject; only mutually connected (accepted) pairs can chat or initiate call requests.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/users/UserResultCard.tsx",
+        "frontend/src/hooks/useConnectionRequests.ts",
+        "frontend/src/hooks/useConnections.ts",
+        "frontend/src/pages/RequestsPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-1-1-messaging-between-connected-users-including-creating-a-conversation-thread-per-connected-pair-and-sending-reading-messages-with-timestamps",
+      "featureTitle": "Implement 1:1 messaging between connected users, including creating a conversation thread per connected pair and sending/reading messages with timestamps.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/hooks/useChat.ts",
+        "frontend/src/pages/ChatDetailPage.tsx",
+        "frontend/src/pages/ChatsPage.tsx",
+        "frontend/src/utils/time.ts"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-5"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-a-call-feature-as-call-requests-signaling-only-allow-connected-users-to-initiate-a-call-request-and-allow-the-recipient-to-accept-decline-end-show-call-state-updates-in-the-ui",
+      "featureTitle": "Add a ‘call’ feature as call requests (signaling only): allow connected users to initiate a call request and allow the recipient to accept/decline/end; show call state updates in the UI.",
+      "files": [
+        "frontend/src/components/calls/CallRequestPanel.tsx",
+        "frontend/src/hooks/useCallRequests.ts",
+        "frontend/src/pages/ChatDetailPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-6"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-create-the-main-navigation-and-pages-for-lensgram-onboarding-first-time-search-discover-requests-incoming-outgoing-chats-list-chat-detail-with-call-controls",
+      "featureTitle": "Create the main navigation and pages for LensGram: Onboarding (first-time), Search/Discover, Requests (incoming/outgoing), Chats list, Chat detail (with call controls).",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/layout/AppLayout.tsx",
+        "frontend/src/components/layout/PrimaryNav.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-7"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-define-and-enforce-a-coherent-visual-theme-for-lensgram-distinct-style-consistent-colors-typography-layout-across-all-pages-using-tailwind-and-existing-ui-components-avoid-blue-purple-as-primary-brand-colors",
+      "featureTitle": "Define and enforce a coherent visual theme for LensGram (distinct style, consistent colors/typography/layout) across all pages using Tailwind and existing UI components; avoid blue/purple as primary brand colors.",
+      "files": [
+        "frontend/src/components/layout/AppLayout.tsx",
+        "frontend/src/index.css",
+        "frontend/src/pages/ChatDetailPage.tsx",
+        "frontend/src/pages/DiscoverPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-8"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-generated-static-brand-assets-and-use-them-in-the-ui-an-app-logo-and-a-small-favicon-style-icon",
+      "featureTitle": "Add generated static brand assets and use them in the UI: an app logo and a small favicon-style icon.",
+      "files": [
+        "frontend/index.html",
+        "frontend/src/components/auth/SignedOutScreen.tsx",
+        "frontend/src/components/layout/AppLayout.tsx",
+        "frontend/src/pages/OnboardingPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-9"
+      ],
+      "confidence": "high"
+    }
+  ]
+}
